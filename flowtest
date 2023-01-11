@@ -1,0 +1,41 @@
+import plotly.graph_objs as go
+
+# Create the scatter plot
+fig = go.Figure(data=go.Scatter(x=[1, 2, 3], y=[4, 5, 6]))
+
+# Set x and y axis labels
+fig.update_layout(xaxis_title='X-axis Label', yaxis_title='Y-axis Label')
+
+# Set background color to black
+fig.update_layout(paper_bgcolor='black', plot_bgcolor='black')
+
+# Add event function to detect clicks and releases on the graph
+fig.data[0].on_click(callback)
+fig.data[0].on_release(callback)
+
+# Show the plot
+fig.show()
+
+import plotly.graph_objs as go
+from plotly.subplots import make_subplots
+
+def callback(trace, points, selector):
+    for point in points.point_inds:
+        x = trace.x[point]
+        y = trace.y[point]
+        # Prompt the user to confirm the data point
+        confirm = input(f'Are you sure you want to add the data point ({x}, {y})? (y/n)')
+        if confirm.lower() == 'y':
+            # Add the data point to the scatter plot
+            trace.x = trace.x + [x]
+            trace.y = trace.y + [y]
+            # Insert data in the database
+            insert_data_to_db(x,y)
+        elif confirm.lower() == 'n':
+            #Remove point from scatter plot
+            trace.x.pop(point)
+            trace.y.pop(point)
+            # Remove from database
+            remove_data_from_db(x,y)
+        else:
+            print("Invalid input")
